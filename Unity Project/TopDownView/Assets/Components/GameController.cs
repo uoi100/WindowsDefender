@@ -10,13 +10,21 @@ public class GameController : MonoBehaviour
     public SpawnerAI spawner;
     public Game_Timer gameTime;
     public Rounds rounds;
+    public UnityEngine.UI.Text gameInfoDebugText;
+    public UnityEngine.UI.Text resourceText;
 
     private ArrayList enemies;
     private ArrayList spawners;
+    private ArrayList[] teamSpawners = new ArrayList[2];
     private float timer;
+
     private Waypoint _point;
+    private Waypoint _opponentPoint;
+
     private Tile[,] map;
+    public int money;
     private int _mapWidth, _mapHeight;
+    private int teamId = 1;
 
     struct Square
     {
@@ -30,24 +38,33 @@ public class GameController : MonoBehaviour
     // Use this for initialization
     void Start()
     {
+        GetGameInitInfo();
         enemies = new ArrayList();
         spawners = new ArrayList();
+        teamSpawners[0] = new ArrayList();
+        teamSpawners[1] = new ArrayList();
+
+        money = 50;
         gameTime.setTime(10.0f);
         timer = 0;
-        rounds.notParsed = true; 
+        rounds.notParsed = true;
+        resourceText.text = money.ToString();
 
-        TMXLoader tmxl = new TMXLoader(Resources.Load<TextAsset>("coolmap2"), this);
+        TMXLoader tmxl = new TMXLoader(Resources.Load<TextAsset>("coolmap2"), this, teamId);
         tmxl.loadMeta();
-        _mapWidth = tmxl.mapWidth;
-        _mapHeight = tmxl.mapHeight;    
+        _mapWidth = tmxl.realMapWidth;
+        _mapHeight = tmxl.realMapHeight;    
         map = tmxl.tiles;
         tmxl.load();
+
+        
     }
 
 
     // Update is called once per frame
     void Update()
     {
+        money = int.Parse(resourceText.text);
         if (rounds.notParsed)
             rounds.parseWave();
         
@@ -62,11 +79,12 @@ public class GameController : MonoBehaviour
             timer += 1*Time.deltaTime;
             if (timer > 0.5f)
             {
+                EnemyAI selectedAI = rounds.getEnemySpawn();
                 foreach (SpawnerAI spawn in spawners)
                 {
                     EnemyAI temp;
                     timer -= 0.5f;
-                    temp = (EnemyAI)GameObject.Instantiate(rounds.getEnemySpawn(), spawn.transform.position, transform.rotation);
+                    temp = (EnemyAI)GameObject.Instantiate(selectedAI, spawn.transform.position, transform.rotation);
                     temp.transform.parent = transform.Find("Enemies").transform;
                     // Some Path-finding Algorithm here
                     temp.movementPoints = copyWaypoints(spawn, temp.isGround);
@@ -78,30 +96,96 @@ public class GameController : MonoBehaviour
         }
     }
 
-    void CheckEnemy()
+
+
+    void GetGameInitInfo()
     {
-        for (int i = 0; i < enemies.Count; i++)
+        string schemaName = "towerdefender:";
+
+        string serverIpAddr;
+        string username;
+        string[] cmdLineArgs = System.Environment.GetCommandLineArgs();
+        if (cmdLineArgs.Length > 1 && cmdLineArgs[1].StartsWith(schemaName))
         {
-            EnemyAI temp = (EnemyAI)enemies[i];
-            if (temp.health <= 0)
-            {
-                Destroy(temp.gameObject);
-                enemies.Remove(temp);
-            }
+            string[] uriList = cmdLineArgs[1].Substring(schemaName.Length).Split('|');
+            serverIpAddr = uriList[0];
+            username = uriList[1];
+            gameInfoDebugText.text = "IP: " + serverIpAddr + "\nUser: " + username;
         }
     }
 
-    public void addSpawnerToSpawnerList(SpawnerAI spai)
+    /// <summary>
+    /// Check the health of the enemies, if they are 0 then execute their OnDeath functions
+    /// If the enemy spawned more enemies then add those enemies to the list
+    /// </summary>
+    void CheckEnemy()
+    {
+        ArrayList tempNewEnemies = new ArrayList();
+
+        for (int i = 0; i < enemies.Count; i++)
+        {
+            EnemyAI temp = (EnemyAI)enemies[i];
+
+            if (temp.health <= 0)
+            {
+                EnemyAI[] newEnemies = null;
+                money += temp.reward;
+                
+                resourceText.text = money.ToString();
+
+                if((newEnemies = temp.OnDeath()) != null)
+                    for (int j = 0; j < newEnemies.Length; j++)
+                        tempNewEnemies.Add(newEnemies[j]);
+                
+                enemies.Remove(temp);
+                
+            }
+        }
+
+        for (int i = 0; i < tempNewEnemies.Count; i++)
+            enemies.Add(tempNewEnemies[i]);
+    }
+
+    /// <summary>
+    /// Get Enemies within range of a position
+    /// </summary>
+    /// <param name="atransform"></param>
+    /// <param name="range"></param>
+    /// <returns></returns>
+    public LinkedList<EnemyAI> getEnemyWithinRange(Transform atransform, float range)
+    {
+        LinkedList<EnemyAI> enemyList = new LinkedList<EnemyAI>();
+        for (int i = 0; i < enemies.Count; i++)
+        {
+            EnemyAI temp = (EnemyAI)enemies[i];
+            if ((temp.transform.position - atransform.position).magnitude <= range && temp.transform != atransform)
+            {
+                enemyList.AddLast(temp);
+            }
+        }
+        return enemyList;
+    }
+
+    /// <summary>
+    /// Adds a spawner to a spawner list
+    /// </summary>
+    /// <param name="spai"></param>
+    public void addSpawnerToSpawnerList(SpawnerAI spai, int teamId)
     {
 
         spawners.Add(spai);
-        spai.wayPoints = pathFinding(spai);
-        spai.flyPoints = pathFinding(spai, true);
+        spai.wayPoints = pathFinding(spai, false, teamId);
+        spai.flyPoints = pathFinding(spai, true, teamId);
+        teamSpawners[teamId - 1].Add(spai);
     }
 
-    public void setWayPoint(Waypoint way)
+
+    public void setWayPoint(Waypoint way, int teamId)
     {
-        _point = way;
+        if (teamId != this.teamId)
+            _opponentPoint = way;
+        else
+            _point = way;
     }
 
     /// <summary>
@@ -109,7 +193,7 @@ public class GameController : MonoBehaviour
     /// </summary>
     /// <param name="spawner"></param>
     /// <returns>List of Vectors that the Monsters will follow till they reach their destination</returns>
-    LinkedList<Vector2> pathFinding(SpawnerAI spawner, bool flying = false)
+    LinkedList<Vector2> pathFinding(SpawnerAI spawner, bool flying, int teamId)
     {
         // 2D Array List of possible paths monsters can take to reach their destination
         LinkedList<Vector2> paths = new LinkedList<Vector2>();
@@ -120,7 +204,7 @@ public class GameController : MonoBehaviour
 
         LinkedList<Square> leadingSquares = new LinkedList<Square>();
 
-        Vector2 destSquare = FindTile(_point.gameObject);
+        Vector2 destSquare = FindTile((teamId != this.teamId ? _opponentPoint.gameObject : _point.gameObject));
         int fMin = 0, g = 0;
         Square spawn = createSquare(g, FindTile(spawner.gameObject), destSquare);
         leadingSquares.AddLast(spawn);
@@ -364,7 +448,14 @@ public class GameController : MonoBehaviour
 
         return dx + dy;
     }
-
+    
+    /// <summary>
+    /// Creates a new square
+    /// </summary>
+    /// <param name="g">Movement Cost</param>
+    /// <param name="v">First Point</param>
+    /// <param name="dv">Second Point</param>
+    /// <returns></returns>
     Square createSquare(int g, Vector2 v, Vector2 dv)
     {
         Square newSquare = new Square();
@@ -399,6 +490,12 @@ public class GameController : MonoBehaviour
         return dx + dy;
     }
 
+    /// <summary>
+    /// creates a new copy of a LinkedList
+    /// </summary>
+    /// <param name="spawner"></param>
+    /// <param name="ground"></param>
+    /// <returns></returns>
     LinkedList<Vector2> copyWaypoints(SpawnerAI spawner, bool ground)
     {
         LinkedList<Vector2> copyWaypoints = new LinkedList<Vector2>();

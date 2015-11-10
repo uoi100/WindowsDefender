@@ -1,37 +1,53 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Reflection;
 
 public class TowerAI : Building {
 
     public projectileAI projectileSource;
-    //public AudioClip shootSound;
+    
 
-    protected float timer;
-    protected float attackSpd;
-    protected bool attacksGround;
-    protected bool attacksAir;
-    protected float attackRange;
-    protected int towerDamage;
-    protected int drainDamage;
-    protected float drainSpd;
-    protected float drainDuration;
+    public int towerDamage;
+    public int cost;
+
+    public float attackSpd;
+    public bool attacksGround;
+    public bool attacksAir;
+    public float attackRange;
+
+    public int drainDamage;
+    public float drainSpd;
+    public float drainDuration;
+
+    public bool revealsInvisible;
+
+    private float timer;
     protected AudioSource aSource;
 
     // Use this for initialization
-    void Start () {
+    public TowerAI () {
         attackSpd = 0.5f;
         attackRange = 1.0f;
         attacksGround = true;
+        cost = 50;
+
         attacksAir = false;
+		revealsInvisible = false;
         towerDamage = 50;
         drainDamage = 0;
         drainSpd = 0;
         drainDuration = 0;
+
+        timer = Time.time + attackSpd;
+    }
+
+    void Start()
+    {
         aSource = GetComponent<AudioSource>();
     }
-	
-	void Update () {
-        towerAI();
+
+    void Update () {
+        ExecuteTowerAI();
     }
 
     /// <summary>
@@ -41,21 +57,19 @@ public class TowerAI : Building {
     /// 3. Shoot the target if applicable (shootTarget(target.gameObject) - Spawn Projectile)
     /// 4. Decrement timer by Attack Speed
     /// </summary>
-    protected void towerAI()
+    protected void ExecuteTowerAI()
     {
         if (operating)
         {
             EnemyAI target = null;
-            timer += Time.deltaTime;
 
-            if (timer > attackSpd)
+            if (Time.time >= timer)
             {
+                timer = Time.time + attackSpd;
                 target = detectEnemies();
 
                 if (target != null)
                     shootTarget(target.gameObject);
-
-                timer -= attackSpd;
             }
         }
     }
@@ -64,7 +78,7 @@ public class TowerAI : Building {
     /// Creates a projectile object that will fly towards the target
     /// </summary>
     /// <param name="target"></param>
-    public virtual void shootTarget(GameObject target)
+    public virtual projectileAI shootTarget(GameObject target)
     {
         projectileAI temp = (projectileAI) projectileAI.Instantiate(projectileSource, transform.position, transform.rotation);
         temp.transform.parent = transform;
@@ -74,6 +88,7 @@ public class TowerAI : Building {
         temp.drainDuration = drainDuration;
         temp.target = target;
         aSource.PlayOneShot(aSource.clip, 0.9f);
+        return temp;
     }
 
     /// <summary>
@@ -87,25 +102,45 @@ public class TowerAI : Building {
 
         float distance = attackRange;
 
-        // Get the nearest target and shoot at it
-        foreach (GameObject obj in targets)
+        if (targets.Length > 0)
         {
-            EnemyAI enemy = obj.GetComponent<EnemyAI>();
-
-            if (!((attacksGround && enemy.isGround) || (attacksAir && !enemy.isGround)))
-                continue;
-
-            float targetDist = Vector2.Distance(transform.position, obj.transform.position);
-
-            if (targetDist < distance)
+            // Get the nearest target and shoot at it
+            foreach (GameObject obj in targets)
             {
-                distance = targetDist;
-                target = enemy;
+                EnemyAI enemy = obj.GetComponent<EnemyAI>();
+
+                if (enemy == null)
+                    continue;
+
+                if (!((attacksGround && enemy.isGround) || (attacksAir && !enemy.isGround)) || !enemy.isVisible)
+                    continue;
+
+                float targetDist = Vector2.Distance(transform.position, obj.transform.position);
+
+                if (targetDist < distance)
+                {
+                    distance = targetDist;
+                    target = enemy;
+                }
             }
         }
 
         return target;
     }
 
+	/// <summary>
+	/// Upgrades a property of the tower.
+	/// </summary>
+	/// <param name="propertyName">Name of property of tower.</param>
+	/// <param name="newVal">New value of property.</param>
+	public void upgradeTower(string propertyName, object newVal)
+	{ 
+		FieldInfo info = this.GetType().GetField(propertyName, BindingFlags.NonPublic | BindingFlags.Instance);
+
+		if (info != null)
+			info.SetValue (this, newVal);
+		else
+			Debug.Log("Field does not exist.");
+	}
     // End of Function
 }

@@ -1,0 +1,89 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - My ASP.NET Application</title>
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+
+</head>
+<body>
+    <div id="wrapper">
+        <div class="navbar navbar-inverse navbar-fixed-top">
+            <div class="container">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <img src="~/Resources/icon.png" class="navbar-icon" />
+                </div>
+                <div class="navbar-collapse collapse">
+                    <ul class="nav navbar-nav">
+                        @if (Request.IsAuthenticated)
+                        {
+                            <li>@Html.ActionLink("Search for Game", "Index", "Matchmaking")</li>
+                        }
+                        else
+                        {
+                            <li>@Html.ActionLink("Home", "Index", "Home")</li>
+                        }
+                        <li>@Html.ActionLink("Media", "Media", "Home")</li>
+                        <li>@Html.ActionLink("Download", "Download", "Home")</li>
+                        <li>@Html.ActionLink("About", "About", "Home")</li>
+                    </ul>
+                    @Html.Partial("_LoginPartial")
+                </div>
+            </div>
+        </div> <!-- /navbar -->
+        @*@{
+            var controller = ViewContext.RouteData.Values["controller"];
+            var action = ViewContext.RouteData.Values["action"];
+            if ((string)controller == "Home" && (string)action == "Index")
+            {
+
+            }
+        }*@
+
+        @if (IsSectionDefined("Hero"))
+        {
+            @RenderSection("Hero");
+        }
+
+        <div class="container body-content">
+            @RenderBody()
+        </div>
+    
+
+        <footer>
+            <div class="container">
+                <div class="row">
+                    <div class="col-xs-3">
+                        &copy; @DateTime.Now.Year - Tech Pro Set 4D
+                    </div>
+                    <div class="col-xs-9" style="text-align: right">
+                        <small>This is an academic project. Use of names and/or media falls under the fair use guidelines.</>
+                    </div>
+                </div>
+
+            </div>
+        </footer>
+
+<<<<<<< HEAD
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+    @RenderSection("scripts", required: false)
+    @if (IsSectionDefined("js"))
+    {
+        @RenderSection("js");
+    }
+=======
+        @Scripts.Render("~/bundles/jquery")
+        @Scripts.Render("~/bundles/bootstrap")
+        @RenderSection("scripts", required: false)
+    </div>
+>>>>>>> theme
+</body>
+</html>

@@ -1,0 +1,238 @@
+﻿@using Microsoft.AspNet.Identity
+@{
+    ViewBag.Title = "Game Lobby";
+}
+
+@section Hero {
+    <div class="about-hero">
+        <div class="container valign">
+            <div class=" row">
+                <div class="col-md-12">
+                    <a href="/"><h1 class="massivetitle">WINDOWS TOWER DEFENDER</h1></a>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<h2>@ViewBag.Title</h2>
+
+@section js {
+    <script src="~/Scripts/jquery.signalR-2.2.0.min.js"></script>
+    <script src="~/signalr/hubs"></script>
+    <script src="https://code.createjs.com/soundjs-0.6.1.min.js"></script>
+
+    <script>
+            var bloopSound = "Bloop";
+            createjs.Sound.registerSound("/Content/Sounds/bloop.mp3", bloopSound);
+            var clickSound = "Click";
+            createjs.Sound.registerSound("/Content/Sounds/click.mp3", clickSound);
+            var errorSound = "Error";
+            createjs.Sound.registerSound("/Content/Sounds/error.mp3", errorSound);
+            var joinSound = "Join";
+            createjs.Sound.registerSound("/Content/Sounds/join.mp3", joinSound);
+            var launchSound = "Launch";
+            createjs.Sound.registerSound("/Content/Sounds/launch.mp3", launchSound);
+    </script>
+
+    <script>
+        // Socket connection object
+        var ws = $.connection.chatHub;
+
+        // Ready status of player
+        var readyStatus = false;
+
+        // Timer for launch sequence
+        var launchTimer = null;
+
+        // IP of host to connect to
+        var hostIP = null;
+
+        /*
+         * Connect to server 
+         */
+        $(function () {
+            $.connection.hub.start().done(function () {
+                ready = false;
+                registerUIEventHandlers();
+            });
+        });
+
+        /* 
+         * Receive message
+         */
+        ws.client.send = function (message) {
+            $("#chat").append('<div>' + message + '</div>');
+            createjs.Sound.play(clickSound);
+            $("#chat").animate({ scrollTop: $("#chat").prop("scrollHeight") - $("#chat").height() }, 50);
+        };
+
+        /*
+         * Receive user list
+         */
+        ws.client.updateUserList = function (json) {
+            var userlist = $.parseJSON(json);
+            $('#userlist').html('');
+            for (var i = 0; i < userlist.length; i++)
+                $("#userlist").append('<div>' + userlist[i] + '</div>');
+        };
+
+        /*
+         * Receive number of users that are ready
+         */
+        ws.client.updateReadyCount = function (count) {
+            $('#readycount').html(count + ' of 4 players ready.');
+            createjs.Sound.play(bloopSound);
+            $('#readycount').addClass("animated jello")
+               .one('webkitAnimationEnd oanimationend msAnimationEnd animationend',
+                   function (e) {
+                       $('#readycount').removeClass();
+                   }
+           );
+        };
+
+        /*
+         * Starts launch sequence
+         */
+        ws.client.launchGame = function (hostip) {
+            hostIP = hostip;
+            launchTimer = setTimeout(launch, 11000);
+            $('#myModal').modal('show');
+            createjs.Sound.play(launchSound);
+        };
+
+        /*
+         * Cancels a launch
+         */
+        ws.client.cancelLaunch = function () {
+            clearTimeout(launchTimer);
+            $('#myModal').modal('hide');
+            createjs.Sound.play(errorSound);
+            createjs.Sound.stop(launchSound);
+        };
+
+        /*
+         * Launches game by visiting URI Scheme
+         */
+        function launch() {
+            clearTimeout(launchTimer);
+            $('#myModal').modal('hide');
+            createjs.Sound.stop(launchSound);
+            document.location.href = 'towerdefender:' + hostIP + '|@User.Identity.GetUserName()';
+        }
+
+        /*
+         * Register UI event handlers
+         */
+        function registerUIEventHandlers() {
+            // Send button
+            $('#sendmessage').click(function () {
+                ws.server.sendChatMessage($('#message').val());
+                $('#message').val('').focus();
+            });
+
+            // Cancel button
+            $('#cancelButton').click(function () {
+                readyStatus = false;
+                ws.server.ready(false);
+                ws.server.cancelLaunch();
+                $('#message').val('').focus();
+            });
+
+            // Press <enter> key on #message
+            $('#message').keyup(function (e) {
+                if (e.which == 13) {
+                    $('#sendmessage').click();
+                }
+            });
+
+            // Ready/Not Ready button
+            $('#readytoggle').click(function () {
+                readyStatus = !readyStatus;
+                ws.server.ready(readyStatus);
+
+                if (readyStatus) {
+                    $('#readytoggle').text('Not Ready');
+                    $('#readystatus').html('You are ready!');
+                }
+                if (!readyStatus) {
+                    $('#readytoggle').text('Ready');
+                    $('#readystatus').html('Please press Ready...');
+                }
+
+                $('#message').focus();
+            });
+
+            $('#leave').click(function () {
+                document.location.href = "/";
+            });
+        }
+    </script>
+}
+
+<div id="myModal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-body" style="text-align: center">
+                <h1>Launching game...</h1>
+                <img src="~/Resources/searching.gif" />
+                <br />
+                If game fails to load. We need to make it so the user can go install the urischeme and still come back to join somehow.
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="cancelButton" class="btn btn-default" data-dismiss="modal">Cancel</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div class="row">
+
+    <div class="col-xs-8">
+        <div class="panel panel-default chatbox">
+            <div class="panel-heading">
+                Chat
+            </div>
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <div id="chat" class="chat"></div>
+                        <div class="input-group">
+                            <input id="message" type="text" class="form-control chatmessage" placeholder="Type a message...">
+                            <span class="input-group-btn">
+                                <button id="sendmessage" class="btn btn-default" type="button">Send</button>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <br /><br /><br />
+    </div>
+
+    <div class="col-xs-4">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                Connected Users
+            </div>
+            <div class="panel-body">
+                <div id="userlist">
+                    Waiting...
+                </div>
+            </div>
+        </div>
+        <br />
+        <div id="readycount">0/4 Users Ready</div>
+        <br /><br />
+        <div id="readystatus">Please press Ready...</div>
+        <br /><br />
+        <button id="readytoggle" class="btn-lg btn-success" type="button">I'm Ready</button>
+        <button id="leave" class="btn-lg btn-danger" type="button">Leave Lobby</button>
+    </div>
+
+    
+
+</div>

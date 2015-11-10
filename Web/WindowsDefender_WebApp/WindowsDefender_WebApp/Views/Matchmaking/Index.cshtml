@@ -1,0 +1,140 @@
+﻿@{
+    ViewBag.Title = "Matchmaking";
+}
+
+@section Hero {
+    <div class="about-hero">
+        <div class="container valign">
+            <div class=" row">
+                <div class="col-md-12">
+                    <a href="/"><h1 class="massivetitle">WINDOWS TOWER DEFENDER</h1></a>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<h2>@ViewBag.Title</h2>
+
+@section js {
+    <script>
+        var timer;
+        function cancel() {
+            clearTimeout(timer);
+            $('#myModal').modal('hide')
+        }
+
+        $('#searchbutton').click(function () {
+            $('#myModal').modal('show')
+            timer = setTimeout(function () {
+                document.location.href = "/Matchmaking/Find";
+            }, 3000);
+        });
+    </script>
+}
+
+<div id="myModal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-body" style="text-align: center">
+                <h1>Searching for Game...</h1>
+                <img src="~/Resources/searching.gif" />
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" onclick="cancel()">Cancel</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div class="row">
+
+    <div class="col-xs-8">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        Search for Game
+                    </div>
+                    <div class="panel-body">
+                        <a href="#" id="searchbutton" class="btn btn-success btn-lg" style="min-width: 251px;">Search&nbsp;&nbsp;<span class="glyphicon glyphicon-search" onclick="search()"></span></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+     
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        Reminder
+                    </div>
+                    <div class="panel-body">
+                        <br />
+                        <div style="line-height: 2em; float: left"><span class="glyphicon glyphicon-warning-sign" style="font-size: 20px"></span></div> <div style="line-height: 28px;">&nbsp;&nbsp;Please download the client before finding a game!</div>
+                        <br />
+                        <a href="~/Content/setup.exe" class="btn btn-primary btn-lg">Download Game&nbsp;&nbsp;<span class="glyphicon glyphicon-download"></span></a>
+                        <br />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xs-4">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                Game History
+            </div>
+            <div class="panel-body">
+                 <div class="row">
+                    <div class="col-xs-2">
+                        <span class="label label-success">WIN</span>
+                    </div>
+                    <div class="col-xs-10">
+                        11/12/2005 10:42pm
+                    </div>
+                </div>
+
+                <br />
+
+                <div class="row">
+                    <div class="col-xs-2">
+                        <span class="label label-danger">LOSS</span>
+                    </div>
+                    <div class="col-xs-10">
+                        11/12/2005 10:42pm
+                    </div>
+                </div>
+
+                <br />
+
+                <div class="row">
+                    <div class="col-xs-2">
+                        <span class="label label-success">WIN</span>
+                    </div>
+                    <div class="col-xs-10">
+                        11/12/2005 10:42pm
+                    </div>
+                </div>
+
+                <br />
+
+                <div class="row">
+                    <div class="col-xs-2">
+                        <span class="label label-danger">LOSS</span>
+                    </div>
+                    <div class="col-xs-10">
+                        11/12/2005 10:42pm
+                    </div>
+                </div>
+                    
+            </div>
+        </div>
+        
+    </div>
+
+</div>

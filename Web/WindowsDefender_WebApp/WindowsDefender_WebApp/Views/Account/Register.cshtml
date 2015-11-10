@@ -1,0 +1,80 @@
+﻿@model WindowsDefender_WebApp.Models.RegisterViewModel
+@{
+    ViewBag.Title = "Register";
+}
+
+@section Hero {
+    <div class="about-hero">
+        <div class="container valign">
+            <div class=" row">
+                <div class="col-md-12">
+                    <a href="/"><h1 class="massivetitle">WINDOWS TOWER DEFENDER</h1></a>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <h2>@ViewBag.Title</h2>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-7">
+            <div class="panel panel-default">
+                <div class="panel-heading">Create a new account:</div>
+                <div class="panel-body">
+                    @using (Html.BeginForm("Register", "Account", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+                    {
+                        @Html.AntiForgeryToken()
+
+                        @Html.ValidationSummary("", new { @class = "text-danger" })
+                        <div class="form-group">
+                            @Html.LabelFor(m => m.Username, new { @class = "col-md-3 control-label" })
+                            <div class="col-md-9">
+                                @Html.TextBoxFor(m => m.Username, new { @class = "form-control" })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(m => m.Email, new { @class = "col-md-3 control-label" })
+                            <div class="col-md-9">
+                                @Html.TextBoxFor(m => m.Email, new { @class = "form-control" })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(m => m.Password, new { @class = "col-md-3 control-label" })
+                            <div class="col-md-9">
+                                @Html.PasswordFor(m => m.Password, new { @class = "form-control" })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(m => m.ConfirmPassword, new { @class = "col-md-3 control-label" })
+                            <div class="col-md-9">
+                                @Html.PasswordFor(m => m.ConfirmPassword, new { @class = "form-control" })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-md-offset-3 col-md-9">
+                                <input type="submit" class="btn btn-default" value="Register" />
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+        <div class="col-md-5" style="text-align: center">
+            <a href="/Home/Download" target="_blank"><img src="~/Resources/smalllogo.png" /></a>
+            <br /><br />
+            <a href="/Home/Download" target="_blank">
+                Download Game Client
+            </a>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

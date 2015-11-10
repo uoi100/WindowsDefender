@@ -3,12 +3,12 @@ using System.Collections;
 using System.Collections.Generic;
 
 public class Rounds : MonoBehaviour {
-    int rounds;
+    //int rounds;
 
     public EnemyAI[] enemies;
     public bool notParsed;
 
-    ArrayList _waves;
+    //ArrayList _waves;
     ArrayList _currentWave;
     int _count;
 
@@ -30,14 +30,9 @@ public class Rounds : MonoBehaviour {
         {
             _currentWave.Add(enemies[0]);
             _currentWave.Add(enemies[1]);
-            _currentWave.Add(enemies[3]);
-            _currentWave.Add(enemies[1]);
-            _currentWave.Add(enemies[0]);
-            _currentWave.Add(enemies[2]);
             _currentWave.Add(enemies[2]);
             _currentWave.Add(enemies[3]);
-            _currentWave.Add(enemies[3]);
-            _currentWave.Add(enemies[3]);
+            //_currentWave.Add(enemies[4]);         
         }
 
         notParsed = false;

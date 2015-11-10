@@ -9,29 +9,14 @@ public class EmailVirusAI : EnemyAI {
         hitCount = 0;
         health = 9999;
 	}
-	
-	// Update is called once per frame
-	void Update () {
-        enemyAI();
-	}
 
-    public override void OnTriggerEnter2D(Collider2D obj)
+    protected override void OnCollide(projectileAI projectile)
     {
-        if (obj.gameObject.tag == "PROJECTILE")
-        {
-            projectileAI projectile = obj.gameObject.GetComponent<projectileAI>();
+        hitCount++;
 
-            if (projectile.target == this.gameObject)
-            {
-                hitCount++;
+        if (hitCount == 2)
+            health = 0;
 
-                if (hitCount == 2)
-                    health = 0;
-
-
-                Destroy(obj.gameObject);
-            }
-
-        }
+        Destroy(projectile.gameObject);
     }
 }
