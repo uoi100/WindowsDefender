@@ -215,7 +215,7 @@ public class EnemyAI : MonoBehaviour
         if ((damage = projectile.damage - armour) > 0)
             health -= damage;
 
-        aSource.PlayOneShot(hitSound, 0.9f);
+        GetComponent<AudioSource>().PlayOneShot(hitSound, 0.9f);
 
         if (drainDuration <= 0)
         {
@@ -251,6 +251,8 @@ public class EnemyAI : MonoBehaviour
                 duplicate.health = maxHealth;
                 duplicate.movementPoints = movementPoints;
                 duplicate.transform.parent = transform.parent;
+                duplicate.hitSound = hitSound;
+                duplicate.aSource = aSource;
 
                 duplicateEnemies[i] = duplicate;
             }
@@ -259,5 +261,36 @@ public class EnemyAI : MonoBehaviour
         GameObject.Destroy(gameObject);
 
         return duplicateEnemies;
+    }
+
+    /// <summary>
+    /// Returns description of the Enemy
+    /// </summary>
+    /// <returns></returns>
+    public virtual string ToolTip()
+    {
+        string toolTip = "";
+        toolTip += name;
+        toolTip += "\nCost: " + cost;
+        toolTip += "\nHealth: " + maxHealth;
+        toolTip += "\nArmour: " + armour;
+        toolTip += "\nResistance: " + resistance;
+        toolTip += "\nSpeed: " + movementSpeed;
+        toolTip += "\nBounty: " + reward;
+        if (!isVisible)
+        {
+            toolTip += "\nInvisible";
+
+        }
+        if (!isGround)
+        {
+            toolTip += "\nFlying";
+        }
+        if (duplicates)
+        {
+            toolTip += "\nDuplicating";
+        }
+
+        return toolTip;
     }
 }

@@ -16,4 +16,9 @@ public class HijackerEnemyAI : EnemyAI {
 
         return base.OnDeath();
     }
+
+    public override string ToolTip()
+    {
+        return base.ToolTip() + "\nOn Death buffs speed of nearby enemies";
+    }
 }

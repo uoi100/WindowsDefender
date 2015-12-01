@@ -194,7 +194,7 @@ public class GameController : MonoBehaviour
         timer = 0;
         rounds.notParsed = true;
         resourceText.text = money.ToString();
-        healthText.text = health.ToString();
+        //healthText.text = health.ToString();
         opponentHealth = health;
         opponentHealthText.text = opponentHealth.ToString();
 

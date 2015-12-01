@@ -157,7 +157,8 @@ public class BuildMode : MonoBehaviour {
             mousePos.z -= Camera.main.transform.position.z;
             mousePos = Camera.main.ScreenToWorldPoint(mousePos);
             building = (Building) Instantiate(tower, mousePos, transform.rotation);
-           
+            building.name = building.name.Replace("(Clone)", "");
+
             building.operating = false;
         }
     }
