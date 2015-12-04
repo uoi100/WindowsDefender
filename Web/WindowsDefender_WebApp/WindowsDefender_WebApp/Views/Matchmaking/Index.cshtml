@@ -9,7 +9,7 @@
         <div class="container valign">
             <div class=" row">
                 <div class="col-md-12">
-                    <a href="/"><h1 class="massivetitle">WINDOWS TOWER DEFENDER</h1></a>
+                    <a href="http://techpro.bcit.ca/WTD2015"><h1 class="massivetitle">WINDOWS TOWER DEFENDER</h1></a>
                 </div>
             </div>
         </div>
@@ -29,8 +29,9 @@
         $('#searchbutton').click(function () {
             $('#myModal').modal('show')
             timer = setTimeout(function () {
-                document.location.href = "/Matchmaking/Find";
+                document.location.href = "http://techpro.bcit.ca/WTD2015/Matchmaking/Find";
             }, 3000);
+            return false;
         });
     </script>
 }
@@ -78,7 +79,7 @@
                         <br />
                         <div style="line-height: 2em; float: left"><span class="glyphicon glyphicon-warning-sign" style="font-size: 20px"></span></div> <div style="line-height: 28px;">&nbsp;&nbsp;Please download the client before finding a game!</div>
                         <br />
-                        <a href="~/Content/setup.exe" class="btn btn-primary btn-lg">Download Game&nbsp;&nbsp;<span class="glyphicon glyphicon-download"></span></a>
+                        <a href="http://techpro.bcit.ca/WTD2015/Content/setup.exe" class="btn btn-primary btn-lg">Download Game&nbsp;&nbsp;<span class="glyphicon glyphicon-download"></span></a>
                         <br />
                     </div>
                 </div>
@@ -93,6 +94,10 @@
             </div>
             <div class="panel-body">
 
+                 @if ( ((List<WindowsDefender_WebApp.Models.MatchHistoryDetail>)Model).Count == 0 )
+                 {
+                     <text>No matches yet.</text>
+                 }
                  @foreach (var match in Model)
                  {
                     <div class="row">

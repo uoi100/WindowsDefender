@@ -23,7 +23,7 @@ namespace WindowsDefender_WebApp.Controllers {
             return View();
         }
 
-        public ActionResult Media()
+        public ActionResult Guide()
         {
             return View();
         }

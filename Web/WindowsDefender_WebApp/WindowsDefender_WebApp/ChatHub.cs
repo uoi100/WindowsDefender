@@ -15,7 +15,7 @@ namespace WindowsDefender_WebApp
     {
         private static ConcurrentDictionary<string, User> _users = new ConcurrentDictionary<string, User>();
         private static ConcurrentDictionary<string, Match> _matches = new ConcurrentDictionary<string, Match>();
-        private const string SERVER_IP = "compcst.cloudapp.net";
+        private const string SERVER_IP = "techpro.bcit.ca";
 
         string msg_icon = "<span class=\"glyphicon glyphicon-info-sign server-message-icon\"></span> ";
         string rdy_icon = "<span class=\"glyphicon glyphicon-ok lobby-ready-icon\"></span> ";

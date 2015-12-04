@@ -8,7 +8,7 @@
         <div class="container valign">
             <div class=" row">
                 <div class="col-md-12">
-                    <a href="/"><h1 class="massivetitle">WINDOWS TOWER DEFENDER</h1></a>
+                    <a href="http://techpro.bcit.ca/WTD2015"><h1 class="massivetitle">WINDOWS TOWER DEFENDER</h1></a>
                 </div>
             </div>
         </div>
@@ -24,15 +24,15 @@
 
     <script>
             var bloopSound = "Bloop";
-            createjs.Sound.registerSound("/Content/Sounds/bloop.mp3", bloopSound);
+            createjs.Sound.registerSound("../Content/Sounds/bloop.mp3", bloopSound);
             var clickSound = "Click";
-            createjs.Sound.registerSound("/Content/Sounds/click.mp3", clickSound);
+            createjs.Sound.registerSound("../Content/Sounds/click.mp3", clickSound);
             var errorSound = "Error";
-            createjs.Sound.registerSound("/Content/Sounds/error.mp3", errorSound);
+            createjs.Sound.registerSound("../Content/Sounds/error.mp3", errorSound);
             var joinSound = "Join";
-            createjs.Sound.registerSound("/Content/Sounds/join.mp3", joinSound);
+            createjs.Sound.registerSound("../Content/Sounds/join.mp3", joinSound);
             var launchSound = "Launch";
-            createjs.Sound.registerSound("/Content/Sounds/launch.mp3", launchSound);
+            createjs.Sound.registerSound("../Content/Sounds/launch.mp3", launchSound);
     </script>
 
     <script>
@@ -177,7 +177,7 @@
             });
 
             $('#leave').click(function () {
-                document.location.href = "/";
+                document.location.href = "http://techpro.bcit.ca/WTD2015";
             });
         }
     </script>
@@ -191,8 +191,6 @@
             <div class="modal-body" style="text-align: center">
                 <h1>Launching game...</h1>
                 <img src="~/Resources/searching.gif" />
-                <br />
-                If game fails to load. We need to make it so the user can go install the urischeme and still come back to join somehow.
             </div>
             <div class="modal-footer">
                 <button type="button" id="cancelButton" class="btn btn-default" data-dismiss="modal">Cancel</button>

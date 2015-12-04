@@ -11,7 +11,7 @@ html, body {
 body {
     padding-top: 50px;
     background: #181818;
-    background: url(/Resources/hexabump.png);
+    background: url(./hexabump.png);
     height: 100%;
 }
 
@@ -19,6 +19,13 @@ body {
     min-height: 100%;
     position: relative;
 }
+
+.groupphoto {
+    width: 100%;
+    height: auto;
+    box-shadow: 0px 50px 49px -44px #000;
+}
+
 
 /* Set padding to keep content from hitting the edges */
 .body-content {
@@ -288,6 +295,7 @@ footer {
     background: black;
     padding: 25px;
     margin: 0;
+    margin-bottom: 25px;
     background: url(../Resources/hero3.JPG);
     background-size: 100% 100%;
      -webkit-box-shadow: 0px 50px 49px -44px #283592;
@@ -296,7 +304,6 @@ footer {
 }
 .fixed-panel {
     min-height: 305px;
-    max-height: 305px;
 }
 .signup-text {
     color:#ff1b1b !important;
@@ -309,8 +316,117 @@ footer {
     text-shadow: 0 0 10px #222222, 0 0 20px #342330;
 }
 
+.coolhr {
+    -webkit-box-shadow: 0px 0px 5px 3px #283592;
+    -moz-box-shadow: 0px 0px 5px 3px #283592;
+    box-shadow: 0px 0px 5px 3px #283592;
+    width: 100%;
+    height: 2px;
+    background: #C12157;
+    opacity: 0.4;
+}
+
+
 
 /* ABOUT ------------------------------------------------------------------------ */
+.mugshot {
+    width: 105px;
+    height: 105px;
+    border: 1px solid #000;
+    margin-bottom: 20px;
+    padding: 0 !important;
+    border-radius: 120px;
+}
+
+.student-profile {
+    margin-bottom: 40px;
+    height: 105px;
+    padding: 0 !important;
+}
+
+ /* Custom, iPhone Retina */ 
+@media only screen and (min-width : 320px) {
+    .student-role {
+        font-size: 0.8em;
+    }
+}
+
+@media only screen and (min-width : 768px) {
+    .person-title:before {
+        display: none;
+    }
+    .rightsideprofile {
+        position: relative;
+        top: 50%;
+        transform: translateY(-50%);
+    }
+}
+
+/* Extra Small Devices, Phones */ 
+@media only screen and (min-width : 480px) {
+    .student-role {
+        font-size: 1.2em;
+    }
+}
+
+/* Small Devices, Tablets */
+@media (max-width : 768px) {
+    .student-role {
+        font-size: 1.5em;
+    }
+    .person-title:before {
+        content: " ";
+        width: 100%;
+        display: block;
+    }
+    .mugshot {
+        width: 100%;
+        height: auto;
+        border-radius: 150px;
+    }
+    .massivetitle {
+        font-size: 3em !important;
+    }
+    footer {
+        display: none;
+    }
+}
+
+@media only screen and (min-width : 768px) {
+    .rightsideprofile {
+       padding-left: 40px;
+    }
+}
+
+
+/* Medium Devices, Desktops */
+@media only screen and (min-width : 992px) {
+    .student-role {
+        font-size: 1.5em;
+    }
+}
+
+/* Large Devices, Wide Screens */
+@media only screen and (min-width : 1200px) {
+    .student-role {
+        font-size: 1.5em;
+    }
+}
+
+
+.profilewrap div {
+    text-align: left !important;
+}
+
+.student-photo {
+    text-align: left !important;
+    padding: 0 !important;
+}
+
+.student-description {
+    margin-bottom: 20px
+}
+
 .aboutpic {
     height: 300px;
     background: black;
@@ -318,9 +434,17 @@ footer {
     margin: 0;
     background: url(../Resources/hero3.JPG);
     background-size: 100% 100%;
-    box-shadow: 0 4px 2px -2px gray;
+    box-shadow: 0 4px 2px -2px #333;
+    border: 1px solid #333;
 }
 .header-text {
+    color:#3F51B5 !important;
+    font-size: 1.8em;
+    margin-top: 30px;
+    margin-bottom: 30px;
+    clear: both;
+}
+.header-text-large {
     color:#3F51B5 !important;
     font-size: 30pt;
 }
@@ -346,6 +470,16 @@ footer {
 }
 .about-hero a {
     text-decoration: none !important
+}
+.person-title {
+    color: orange;
+}
+.person-name {
+    font-size: 20pt;
+}
+.header-about {
+    text-shadow: 0 0 10px #222222, 0 0 20px #C12157 !important;
+    color: white !important;
 }
 /* MARGINS ------------------------------------------------------------------------ */
 /* top, bottom, left, right + amount */
